@@ -34,18 +34,11 @@ ReactDOM.render((
             <App>
                 <Route exact path="/" component={Login} />
                 <Route exact path='/Login' component={Login} />
-
-                {/* <Route exact path="/Dashboard" component={DashBoard} /> */}
                 <Route exact path="/Dashboard" render={(nextState) => requireAuth(nextState, <DashBoard location={nextState.location} history={nextState.history} match={nextState.match} />)} />
-
-                {/* <Route exact path="/ChangePassword" component={ChangePassword} /> */}
                 <Route exact path="/ChangePassword" render={(nextState) => requireAuth(nextState, <ChangePassword location={nextState.location} history={nextState.history} match={nextState.match} />)} />
-
-                {/* <Route exact path="/Ticket" component={Ticket} /> */}
                 <Route exact path="/Ticket" render={(nextState) => requireAuth(nextState, <Ticket location={nextState.location} history={nextState.history} match={nextState.match} />)} />
-
-                <Route exact path="/ViewTicket" component={ViewTicket} />
-
+                <Route exact path="/ViewTicket/:id?" render={(nextState) => requireAuth(nextState, <ViewTicket location={nextState.location} history={nextState.history} match={nextState.match} />)} />
+                {/* <Route exact path="/ViewTicket" component={ViewTicket} /> */}
             </App>
         </div>
     </HashRouter>
@@ -66,7 +59,7 @@ function requireAuth(nextState, component) {
         }
     }
     else {
-       // var isLoggedIn = sessionStorage.getItem("access_token") = null;
+        // var isLoggedIn = sessionStorage.getItem("access_token") = null;
         nextState.history.push("/Login");
         return component;
     }

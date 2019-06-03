@@ -31,11 +31,12 @@ class Ticket extends Component {
             type: "get",
             success: (data) => { this.setState({ Categories: data["categories"] }) }
         })
+
         $.ajax({
-            url: ApiUrl + "/api/MasterData/GetProjects?clientId=" + sessionStorage.getItem("clientId"),
+            url: ApiUrl + "/api/Client/GetClientProjects?clientId=" + sessionStorage.getItem("clientId"),
             type: "get",
             success: (data) => {
-                this.setState({ Projects: data["ProjectWithLoc"] })
+                this.setState({ Projects: data["clientProjects"] })
             }
         })
     }
@@ -205,7 +206,6 @@ class Ticket extends Component {
             this.setState({ Priority: '' });
             showErrorsForInput(this.refs.priority.wrapper, ["Please select Priority"]);
         }
-
     }
 
     CategoryChanged(val) {
@@ -292,7 +292,7 @@ class Ticket extends Component {
             }
         }
 
-        let url = ApiUrl + "/api/Activities/AddActivity"
+        let url = ApiUrl + "/api/ClientSupport/AddClientRequest"
 
         try {
             MyAjaxForAttachments(
@@ -402,7 +402,7 @@ class Ticket extends Component {
             showErrorsForInput(this.refs.description, ["Please enter description"]);
             success = false;
             if (isSubmit) {
-              //  this.refs.editor.focusEditor();
+                //  this.refs.editor.focusEditor();
                 isSubmit = false;
             }
         }

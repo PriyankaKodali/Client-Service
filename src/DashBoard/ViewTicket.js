@@ -50,6 +50,36 @@ class ViewTicket extends Component {
         }
     }
 
+    componentDidUpdate() {
+
+        if (this.props.match.params["id"] != null) {
+
+            var url = ApiUrl + "/api/ClientService/GetTicketLog?taskId=" + this.state.TicketId
+
+            MyAjax(
+                ApiUrl + "/api/ClientService/GetTicketLog?taskId=" + this.state.TicketId,
+                (data) => { this.setState({ ViewTicketLog: data["ticketLogList"], LastRespondedEmployee: data["lastRespondedEmp"] }) },
+                (error) => toast(error.responseText, {
+                    type: toast.TYPE.ERROR
+                })
+            )
+            this.props.history.push("/ViewTicket/");
+        }
+    }
+
+    reRenderComponent(ticketId) {
+        var url = ApiUrl + "/api/ClientService/GetTicketLog?taskId=" + this.state.TicketId
+
+        MyAjax(
+            ApiUrl + "/api/ClientService/GetTicketLog?taskId=" + this.state.TicketId,
+            (data) => { this.setState({ ViewTicketLog: data["ticketLogList"], LastRespondedEmployee: data["lastRespondedEmp"] }) },
+            (error) => toast(error.responseText, {
+                type: toast.TYPE.ERROR
+            })
+        )
+        this.props.history.push("/ViewTicket/");
+    }
+
     render() {
         return (
             <div className="ticketLogContainer" key={this.state.ViewTicketLog}>
@@ -91,7 +121,7 @@ class ViewTicket extends Component {
                                                              <input type="radio" name="status" value="no" ref="notResolved" checked={this.state.NotResolved} onClick={this.IssueNotResolvedClick.bind(this)} />  No
                                                              {
                                                                     this.state.ShowSubmitButton ?
-                                                                        <button type="button" onClick={this.handleFeedBack.bind(this)} > submit </button>
+                                                                        <button type="button" name="feedback" onClick={this.handleFeedBack.bind(this)} > submit </button>
                                                                         :
                                                                         ""
                                                                 }
@@ -106,7 +136,6 @@ class ViewTicket extends Component {
                                         </div>
                                     </div>
                                 )
-
                             })
                         }
 
@@ -114,7 +143,6 @@ class ViewTicket extends Component {
                 </div>
 
                 <form onSubmit={this.handleSubmit.bind(this)} onChange={this.validate.bind(this)}>
-
                     <div>
                         <div>
                             <div className="col-md-3 col-xs-12">  </div>
@@ -142,10 +170,7 @@ class ViewTicket extends Component {
                             </div>
                         </div>
                     </div>
-
-
                 </form>
-
             </div>
         )
     }
@@ -157,7 +182,6 @@ class ViewTicket extends Component {
             const editorState = EditorState.createWithContent(contentState);
             return editorState;
         }
-
     }
 
     IssueNotResolvedClick(val) {
@@ -177,12 +201,10 @@ class ViewTicket extends Component {
         else {
             showErrorsForInput(this.refs.description, ["Please enter some description"]);
         }
-
-        console.log(val);
+        // console.log(val);
     }
 
     handleFeedBack(e) {
-        // alert("Success !")
         var data = new FormData();
         data.append("Status", this.state.Resolved)
         data.append("TicketId", this.props.location.state["TicketId"])
@@ -193,10 +215,11 @@ class ViewTicket extends Component {
             MyAjaxForAttachments(
                 url,
                 (data) => {
-                    toast("Response submitted successfully!", {
+                    toast("Your response is submitted", {
                         type: toast.TYPE.SUCCESS,
                         autoClose: true
                     })
+
                     this.props.history.push("/DashBoard");
                     return true;
                 },
@@ -223,12 +246,12 @@ class ViewTicket extends Component {
         e.preventDefault();
 
         $(".loader").show();
-        $("button[name='submit']").hide();
+        $("button[name='postResponse']").hide();
 
         if (!this.validate(e)) {
 
             $(".loader").hide();
-            $("button[name='submit']").show();
+            $("button[name='postResponse']").show();
             return;
         }
 
@@ -243,11 +266,14 @@ class ViewTicket extends Component {
             MyAjaxForAttachments(
                 url,
                 (data) => {
-                    toast("Your response is submitted", {
-                        type: toast.TYPE.SUCCESS
-                    });
-                    $("button[name='submit']").show();
-                    this.props.history.push("/DashBoard");
+                    // toast("Your response is submitted", {
+                    //     type: toast.TYPE.SUCCESS
+                    // });
+                    $(".loader").hide();
+                    $("button[name='postResponse']").show();
+                    this.setState({ ResponseHtml: "", Response: EditorState.createEmpty() })
+                    this.reRenderComponent(this.props.location.state["TicketId"]);
+                    //this.props.history.push("/ViewTicket/" + this.props.location.state["TicketId"]);
                     return true;
                 },
                 (error) => {
@@ -256,8 +282,7 @@ class ViewTicket extends Component {
                         autoClose: false
                     });
                     $(".loader").hide();
-                    $("button[name='submit']").show();
-                    $("button[name='reset']").show();
+                    $("button[name='postResponse']").show();
                     return false;
                 },
                 "POST",
@@ -269,7 +294,7 @@ class ViewTicket extends Component {
                 type: toast.TYPE.ERROR
             });
             $(".loader").hide();
-            $("button[name='submit']").show();
+            $("button[name='postResponse']").show();
             return false;
 
         }
@@ -283,7 +308,6 @@ class ViewTicket extends Component {
 
         if (!content.getPlainText('').trim().length > 0) {
 
-
             showErrorsForInput(this.refs.description, ["Please enter description"]);
             success = false;
             if (isSubmit) {
@@ -296,7 +320,6 @@ class ViewTicket extends Component {
         }
 
         return success;
-
     }
 }
 
