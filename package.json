@@ -13,7 +13,7 @@
     "react": "^16.4.0",
     "react-bootstrap-table": "^4.3.1",
     "react-dom": "^16.4.0",
-    "react-draft-wysiwyg": "^1.12.13",
+    "react-draft-wysiwyg": "^1.14.6",
     "react-hash-router": "^0.2.0",
     "react-moment": "^0.7.0",
     "react-route": "^1.0.3",
